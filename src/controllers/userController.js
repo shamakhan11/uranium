@@ -1,14 +1,14 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
 
-const createUser = async function (abcd, xyz) {
+const createUser = async function (req, res) {
   //You can name the req, res objects anything.
   //but the first parameter is always the request 
   //the second parameter is always the response
-  let data = abcd.body;
+  let data = req.body;
   let savedData = await userModel.create(data);
-  console.log(abcd.newAtribute);
-  xyz.send({ msg: savedData });
+  //console.log(body.newAtribute);
+  res.send({ msg: savedData });
 };
 
 const loginUser = async function (req, res) {
@@ -19,7 +19,7 @@ const loginUser = async function (req, res) {
   if (!user)
     return res.send({
       status: false,
-      msg: "username or the password is not corerct",
+      msg: "username or the password is not correct-",
     });
 
   // Once the login is successful, create the jwt token with sign function
@@ -31,10 +31,10 @@ const loginUser = async function (req, res) {
   let token = jwt.sign(
     {
       userId: user._id.toString(),
-      batch: "thorium",
+      batch: "uranium",
       organisation: "FUnctionUp",
     },
-    "functionup-thorium"
+    "FunctionUp-Uranium"
   );
   res.setHeader("x-auth-token", token);
   res.send({ status: true, data: token });
@@ -54,7 +54,7 @@ const getUserData = async function (req, res) {
   // Input 1 is the token to be decoded
   // Input 2 is the same secret with which the token was generated
   // Check the value of the decoded token yourself
-  let decodedToken = jwt.verify(token, "functionup-thorium");
+  let decodedToken = jwt.verify(token, "FunctionUp-Uranium");
   if (!decodedToken)
     return res.send({ status: false, msg: "token is invalid" });
 
@@ -84,7 +84,17 @@ const updateUser = async function (req, res) {
   res.send({ status: updatedUser, data: updatedUser });
 };
 
+const deleteUser = async function (req, res) {
+  
+  let data = req.params.userId;
+  let savedData = await userModel.findOneAndUpdate({ _id: data}, {$set:{isDeleted:true}}, {new:true});
+  console.log(req.newAtribute);
+  res.send({ msg: savedData });
+};
 module.exports.createUser = createUser;
 module.exports.getUserData = getUserData;
 module.exports.updateUser = updateUser;
 module.exports.loginUser = loginUser;
+module.exports.deleteUser = deleteUser;
+
+
